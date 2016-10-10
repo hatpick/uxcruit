@@ -23,9 +23,12 @@ indexRouter.route('/').get(function(req, res){
 });
 
 indexRouter.route('/home').get(function(req, res){
-  res.render('index',{
-    title :'UXcruit'
-  });
+  var err = req.flash('errMessage');
+  if(err.length == 0) {
+    res.render('index', {});
+  } else {
+    res.json({'success':false, 'error': err[0]});
+  }  
 });
 
 indexRouter.route('/experimenter').get(isLoggedIn, function(req, res){
@@ -34,7 +37,7 @@ indexRouter.route('/experimenter').get(isLoggedIn, function(req, res){
   });
 });
 
-indexRouter.route('/login').post(passport.authenticate('local-login', {failureRedirect: '/login'}), function(req, res){
+indexRouter.route('/login').post(passport.authenticate('local-login', {failureRedirect: '/home', failureFlash: true}), function(req, res, next){
   if(req.user) {
     res.status(200).send({'success':true, 'user': req.user});
   } else {
@@ -42,7 +45,7 @@ indexRouter.route('/login').post(passport.authenticate('local-login', {failureRe
   }
 });
 
-indexRouter.route('/signup').post(passport.authenticate('local-signup', {failureRedirect: '/signup'}), function(req, res){
+indexRouter.route('/signup').post(passport.authenticate('local-signup', {failureRedirect: '/home', failureFlash: true}), function(req, res){
   if(req.user) {    
     res.status(200).send({'success':true, 'user': req.user});
   } else {
@@ -50,7 +53,7 @@ indexRouter.route('/signup').post(passport.authenticate('local-signup', {failure
   }
 });
 
-indexRouter.route('/user/login').post(passport.authenticate('user-login', {failureRedirect: '/user/login'}), function(req, res){    
+indexRouter.route('/user/login').post(passport.authenticate('user-login', {failureRedirect: '/home', failureFlash: true}), function(req, res){    
   if(req.user) {
     res.status(200).send({'success':true, 'user': req.user});
   } else {
@@ -58,7 +61,7 @@ indexRouter.route('/user/login').post(passport.authenticate('user-login', {failu
   }
 });
 
-indexRouter.route('/user/signup').post(passport.authenticate('user-signup', {failureRedirect: '/user/signup'}), function(req, res){
+indexRouter.route('/user/signup').post(passport.authenticate('user-signup', {failureRedirect: '/home', failureFlash: true}), function(req, res){
   if(req.user) {    
     res.status(200).send({'success':true, 'user': req.user});
   } else {

@@ -25,14 +25,22 @@ module.exports = function(passport) {
 
         // find a user whose email is the same as the forms email
         // we are checking to see if the user trying to login already exists
-        ExperimenterSchema.findOne({ 'username' :  username }, function(err, user) {
+        ExperimenterSchema.findOne({$or:[{'email' : req.body.email}, {'username' : username}]}, function(err, user) {
             // if there are any errors, return the error
             if (err){
                 return done(err);
             }
             
             if (user) {
-                return done(null, false, req.flash('signupMessage', 'That username is already taken.'));
+                var errTarget = '';
+                if(user.username == username) {
+                    errTarget = 'username';
+                    return done(null, false, req.flash('errMessage', 'That ' + errTarget + ' is already taken'));
+                }
+                if(user.email == req.body.email) {
+                    errTarget = 'email';
+                    return done(null, false, req.flash('errMessage', 'That ' + errTarget + ' is already taken'));
+                }
             } else {
                 
                 var newUser            = new ExperimenterSchema();                
@@ -76,12 +84,12 @@ module.exports = function(passport) {
 
                 // if no user is found, return the message
                 if (!user){
-                  return done(null, false, req.flash('loginMessage', 'No user found.')); // req.flash is the way to set flashdata using connect-flash
+                  return done(null, false, req.flash('errMessage', 'No such user exists')); // req.flash is the way to set flashdata using connect-flash
                 }
 
                 // if the user is found but the password is wrong
                 if (!user.validPassword(password)){
-                  return done(null, false, req.flash('loginMessage', 'Oops! Wrong password.')); // create the loginMessage and save it to session as flashdata
+                  return done(null, false, req.flash('errMessage', 'Wrong password')); // create the loginMessage and save it to session as flashdata
                 }
                 
                 user.lastLogin = Date.now();                
@@ -102,16 +110,21 @@ module.exports = function(passport) {
 
         // find a user whose email is the same as the forms email
         // we are checking to see if the user trying to login already exists
-        UserSchema.findOne({ 'username' :  username }, function(err, user) {
-            // if there are any errors, return the error
+        UserSchema.findOne({$or:[{'email':req.body.email},{'username': username}]}, function(err, user) {
+            // if there are any errors, return the error            
             if (err){
                 return done(err);
             }
             
-            if (user) {
-                return done(null, false, req.flash('signupMessage', 'That username is already taken.'));
-            } else {
-                
+            var errTarget = '';
+                if(user.username == username) {
+                    errTarget = 'username';
+                    return done(null, false, req.flash('errMessage', 'That ' + errTarget + ' is already taken'));
+                }
+                if(user.email == req.body.email) {
+                    errTarget = 'email';
+                    return done(null, false, req.flash('errMessage', 'That ' + errTarget + ' is already taken'));
+            } else {            
                 var newUser            = new UserSchema();                
                 newUser.username    = username;                
                 newUser.password    = newUser.generateHash(password);
@@ -152,12 +165,12 @@ module.exports = function(passport) {
 
                 // if no user is found, return the message
                 if (!user){
-                  return done(null, false, {'error': 'No user found.'}); // req.flash is the way to set flashdata using connect-flash
+                  return done(null, false, {'error': 'No such user exists'}); // req.flash is the way to set flashdata using connect-flash
                 }
 
                 // if the user is found but the password is wrong
                 if (!user.validPassword(password)){
-                  return done(null, false, {'error': 'Oops! Wrong password.'}); // create the loginMessage and save it to session as flashdata
+                  return done(null, false, {'error': 'Wrong password'}); // create the loginMessage and save it to session as flashdata
                 }               
 
                 user.lastLogin = Date.now();                

@@ -23,7 +23,7 @@
 
       paper-button {
         float: right;
-        color: var(--paper-pink-500);
+        color: var(--paper-light-blue-500);
         margin: 0;
       }
 
@@ -35,8 +35,8 @@
         --paper-toast-background-color: var(--paper-red-500);
       }
     </style>
-    <paper-toast text="Ownser was registered successfully!" id="stoast"></paper-toast>
-    <paper-toast text="Ownser registration failed!" id="etoast"></paper-toast>
+    <paper-toast text="Experimenter was registered successfully!" id="stoast"></paper-toast>
+    <paper-toast text="Experimenter registration failed!" id="etoast"></paper-toast>
     <paper-material elevation="2">      
       <paper-input value="{{firstname}}" label="First Name" type="text" auto-validate required></paper-input>
       <paper-input value="{{lastname}}" label="Last Name" type="text" auto-validate required></paper-input>
@@ -83,8 +83,9 @@
       }).done(function(msg){
         if(msg.success) {
           that.$.stoast.open();
-          window.location.href = "/experimenter";
+          window.location.href = "/experimenter";          
         } else {
+          that.$.etoast.text = "Oops: " + msg.error;
           that.$.etoast.open();
         }
       }).fail(function(err){

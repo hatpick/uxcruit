@@ -2,6 +2,7 @@
 <link rel="import" href="../vendor/iron-ajax/iron-ajax.html">
 <link rel="import" href="/vendor/paper-material/paper-material.html">
 <link rel="import" href="/vendor/paper-input/paper-input.html">
+<link rel="import" href="/vendor/paper-toast/paper-toast.html">
 <link rel="import" href="/vendor/paper-button/paper-button.html">
 <!-- Defines element markup -->
 <dom-module id="login-component">
@@ -28,17 +29,22 @@
       #login {
         width: 100%;
         color: #fff;        
-        background: var(--paper-pink-500);
+        background: var(--paper-light-blue-500);
       }
       #forgotpassword {  
         width: 100%;      
-        color: var(--paper-pink-500);
+        color: var(--paper-light-blue-500);
       }
       #signup {
-        color: var(--paper-pink-500);
+        color: var(--paper-light-blue-500);
+      }
+
+      #etoast {
+        --paper-toast-background-color: var(--paper-red-500);
       }
     </style>
-      <paper-material elevation="2" id="form">              
+      <paper-material elevation="2" id="form">      
+        <paper-toast id="etoast"></paper-toast>
         <paper-input value="{{username}}" label="Username" type="text" auto-validate required></paper-input>
         <paper-input value="{{password}}" label="Password" type="password" auto-validate required></paper-input>        
         <br>        
@@ -75,9 +81,10 @@
         method: "POST"
       }).done(function(msg){
         if(msg.success) {
-          window.location.href = "/experimenter"          
+          window.location.href = "/experimenter";
         } else {
-          //error
+          that.$.etoast.text = "Oops: " + msg.error;
+          that.$.etoast.show();
         }
       }).fail(function(err){
         console.log(err);
