@@ -1,0 +1,88 @@
+<!-- Imports polymer -->
+<link rel="import" href="../vendor/iron-ajax/iron-ajax.html">
+<link rel="import" href="/vendor/paper-material/paper-material.html">
+<link rel="import" href="/vendor/paper-input/paper-input.html">
+<link rel="import" href="/vendor/paper-button/paper-button.html">
+<!-- Defines element markup -->
+<dom-module id="login-component">
+  <template>
+    <style>
+      :host {
+        @apply(--layout-vertical);
+        @apply(--layout-center);        
+      }
+
+      .link {
+        text-decoration: none
+      }
+
+      paper-material {
+        padding: 16px;        
+        max-width: 280px;
+        width: 280px;
+        margin: 50px;
+      }
+      paper-button {                        
+        margin: 0;
+      }      
+      #login {
+        width: 100%;
+        color: #fff;        
+        background: var(--paper-pink-500);
+      }
+      #forgotpassword {  
+        width: 100%;      
+        color: var(--paper-pink-500);
+      }
+      #signup {
+        color: var(--paper-pink-500);
+      }
+    </style>
+      <paper-material elevation="2" id="form">              
+        <paper-input value="{{username}}" label="Username" type="text" auto-validate required></paper-input>
+        <paper-input value="{{password}}" label="Password" type="password" auto-validate required></paper-input>        
+        <br>        
+        <a href="/home/forgotpassword" class="link">
+          <paper-button id="forgotpassword">Forgot password?</paper-button>
+        </a>
+        <br>
+        <br>
+        <paper-button raised on-click="login" id="login">Login</paper-button>
+        <br>
+        <br>
+        Don't have an account? <a data-route="signup" class="link" href="/home/signup"><paper-button id="signup">Sign Up</paper-button></a>
+      </paper-material>
+  </template>
+</dom-module>
+
+<!-- Registers custom element -->
+<script>
+  Polymer({
+    is: 'login-component',
+    properties: {
+      username: {type:String},
+      password: {type:String}  
+    },
+    login:function(){
+      var that = this;
+      var data = {};      
+      data.username = this.username;
+      data.password = this.password;      
+      $.ajax({
+        url:"/login",
+        data: JSON.stringify(data),
+        contentType: "application/json",
+        method: "POST"
+      }).done(function(msg){
+        if(msg.success) {
+          window.location.href = "/experimenter"          
+        } else {
+          //error
+        }
+      }).fail(function(err){
+        console.log(err);
+      });
+    }
+  });
+
+</script>

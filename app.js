@@ -4,21 +4,27 @@
 
 var express        = require('express'),
     path           = require('path'),
-    mongoose       = require('mongoose'),
+    mongoose       = require('mongoose'),    
     logger         = require('morgan'),
+    flash          = require('connect-flash'),
     bodyParser     = require('body-parser'),
     compress       = require('compression'),
     favicon        = require('static-favicon'),
     methodOverride = require('method-override'),
     errorHandler   = require('errorhandler'),
     config         = require('./config'),
-    routes         = require('./routes');
+    routes         = require('./routes'),
+    passport       = require('passport'),    
+    cookieParser   = require('cookie-parser'),
+    expressSession = require('express-session');
 
 
 mongoose.connect(config.database.url);
 mongoose.connection.on('error', function () {
   console.log('mongodb connection error');
 });
+
+require('./controllers/login')(passport);
 
 var app = express();
 
@@ -35,8 +41,14 @@ app
   .use(favicon())
   .use(logger('dev'))
   .use(bodyParser())
+  .use(cookieParser('s7az2mm'))
   .use(methodOverride())
   .use(express.static(path.join(__dirname, 'public')))
+  .use(expressSession({secret: 's7az2mm'}))  
+  .use(passport.initialize())
+  .use(passport.session())
+  .use(flash())
+  .all('/api/*', [require('./middlewares/validateRequest')])
   .use(routes.indexRouter);
 
 if (app.get('env') === 'development') {

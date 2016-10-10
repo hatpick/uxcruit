@@ -1,6 +1,35 @@
-extends layout
-
-block content
-  h1= title
-  p Welcome to #{title}
-  example-polymer
+doctype html
+html(lang='en')
+  head
+    meta(charset='UTF-8')
+    meta(name='viewport', content='width=device-width')
+    title UXcruit
+    block css
+      link(rel='stylesheet', href='/css/styles.min.css')
+    block js
+      script(src='/vendor/jquery/dist/jquery.js')
+      script(src='/vendor/es6-shim/es6-shim.min.js')      
+      script(src='/vendor/webcomponentsjs/webcomponents.js')
+    link(rel='import',href='/vendor/polymer/polymer.html')     
+    link(rel='import', href='/vendor/iron-icons/iron-icons.html')  
+    link(rel='import', href='/vendor/paper-icon-button/paper-icon-button.html')
+    link(rel='import', href='/vendor/iron-pages/iron-pages.html')
+    link(rel="import", href="/vendor/iron-flex-layout/classes/iron-flex-layout.html") 
+    link(rel="import",href='/vendor/facebook-login/facebook-login.html')    
+    link(rel="import",href='/components/loginComponent.html')
+    link(rel="import",href='/components/signupComponent.html')
+    link(rel="import",href='/components/routing.html')
+    link(rel='import', href='/components/styles.html')
+    style(is='custom-style', include='styles')
+  body    
+    span#browser-sync-binding
+    template#app(is='dom-bind')
+        .container
+          iron-pages(attr-for-selected='data-route', selected='{{route}}')
+              section(data-route='login')
+                login-component#content
+              section(data-route='signup')
+                signup-component#content
+          paper-toast#toast
+              span.toast-hide-button(role='button', tabindex='0', onclick='app.$.toast.hide()') Ok
+  script(src='/js/app.js')

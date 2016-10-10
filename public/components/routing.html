@@ -1,0 +1,44 @@
+<script src="/vendor/page/page.js"></script>
+<script>
+  window.addEventListener('WebComponentsReady', function() {
+    page.base('/home');
+    if (window.location.port === '') {  // if production
+      page.base(app.baseUrl.replace(/\/$/, ''));
+    }
+
+    page('/', function() {
+      app.route = 'login';
+      $('login-component').addClass('hide');
+      setTimeout(function(){
+        $('login-component').removeClass('hide');
+      }, 300);
+    });
+
+    page(app.baseUrl, function() {
+      app.route = 'login';
+    });
+
+    page('/signup', function() {
+      app.route = 'signup';
+      $('signup-component').addClass('hide');
+      setTimeout(function(){
+        $('signup-component').removeClass('hide');
+      }, 300);
+    });
+
+    page('/forgotpassword', function() {
+      app.route = 'forgotpassword';
+    });
+
+    page('*', function() {
+      app.$.toast.text = 'Can\'t find: ' + window.location.href  + '. Redirected you to Home Page';
+      app.$.toast.show();
+      page.redirect('/');
+    });
+    
+    page({
+      hashbang: true
+    });
+
+  });
+</script>
