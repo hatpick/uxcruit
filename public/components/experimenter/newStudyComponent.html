@@ -1,0 +1,183 @@
+<link rel="import" href="/components/helper/addressAutocomplete.html">
+<dom-module id="new-study-component">
+  <template>
+    <style include="iron-flex iron-flex-alignment iron-flex-factors iron-positioning"></style>
+    <style>
+      :host {
+        display: block;        
+        font-family: Roboto;
+      }
+
+      paper-button {
+        background: var(--paper-light-blue-500);
+        color: #fff;
+        width: 200px;
+        margin-top: 64px;
+      }
+
+      #stoast {        
+        --paper-toast-background-color: var(--paper-green-500);
+      }
+      #etoast {
+        --paper-toast-background-color: var(--paper-red-500);
+      }
+
+      .flex-horizontal {
+        @apply(--layout-horizontal);
+      }
+      .flexchild {        
+        @apply(--layout-flex);
+      }
+
+      .centered {
+        @apply(--layout-horizontal);
+        @apply(--layout-center-justified);
+      }
+
+      .flexchild:not(:last-child){
+        margin-right: 16px;
+      }
+
+      .remote {
+        margin-top: 16px;      
+      }      
+
+      *[prefix] {
+        margin-right:4px;
+      }      
+
+      #wysiwygE {
+        min-height: 250px;
+        border: 1px solid;
+        margin-top: 16px;
+        margin-bottom: 16px;
+      }
+    </style>
+    <!--content-->
+    <form is="iron-form" method="post" id="presubmit">
+      <div class="container flex-horizontal">
+        <div class="flexchild">
+          <paper-input name="title" label="Title" required char-counter maxlength="80" value="{{study.title}}"></paper-input>
+        </div>
+        <div class="category">
+          <paper-dropdown-menu label="Category" on-iron-select="_itemSelected">
+            <paper-listbox class="dropdown-content">
+              <paper-item>Cat 1</paper-item>
+              <paper-item>Cat 2</paper-item>
+              <paper-item>Cat 3</paper-item>
+              <paper-item>Cat 4</paper-item>
+            </paper-listbox>
+          </paper-dropdown-menu>
+        </div>        
+      </div>                  
+      <div class="container flex-horizontal">
+        <div class="flexchild">
+          <paper-input name="investigatorName" value="{{study.investigatorName}}" char-counter maxlength="50" label="Investigator Name" required></paper-input>
+        </div>
+        <div class="flexchild">
+          <gold-email-input auto-validate error-message="This is not a valid email" value="{{study.investigatorEmail}}" name="investigatorEmail" label="Investigator's Email" required>
+          </paper-input>
+        </div>
+        <div>
+          <paper-input value="{{study.compensation}}" name="compensation" label="Compensation" required type="number">
+            <div prefix>$</div>
+          </paper-input>
+        </div>
+      </div>      
+      <wysiwyg-e class="flex" value="{{study.description}}" id="wysiwygE">
+        <wysiwyg-tool-bold class="wysiwyg-tool"></wysiwyg-tool-bold>
+        <wysiwyg-tool-italic class="wysiwyg-tool"></wysiwyg-tool-italic>
+        <wysiwyg-tool-underline class="wysiwyg-tool"></wysiwyg-tool-underline>
+        <wysiwyg-tool-strike class="wysiwyg-tool"></wysiwyg-tool-strike>
+        <wysiwyg-tool-clear class="wysiwyg-tool"></wysiwyg-tool-clear>
+        <wysiwyg-tool-code class="wysiwyg-tool"></wysiwyg-tool-code>
+        <wysiwyg-tool-link class="wysiwyg-tool"></wysiwyg-tool-link>
+        <wysiwyg-tool-image class="wysiwyg-tool"></wysiwyg-tool-image>
+        <wysiwyg-tool-audio class="wysiwyg-tool"></wysiwyg-tool-audio>
+        <wysiwyg-tool-video class="wysiwyg-tool"></wysiwyg-tool-video>
+        <wysiwyg-tool-ordered class="wysiwyg-tool"></wysiwyg-tool-ordered>
+        <wysiwyg-tool-unordered class="wysiwyg-tool"></wysiwyg-tool-unordered>
+        <wysiwyg-tool-indent class="wysiwyg-tool"></wysiwyg-tool-indent>
+        <wysiwyg-tool-outdent class="wysiwyg-tool"></wysiwyg-tool-outdent>
+        <wysiwyg-tool-justify class="wysiwyg-tool" right center full></wysiwyg-tool-justify>
+        <wysiwyg-tool-heading class="wysiwyg-tool" h1 h2 h3 h4 h5 h6></wysiwyg-tool-heading>
+        <wysiwyg-tool-blockquote class="wysiwyg-tool"></wysiwyg-tool-blockquote>
+        <wysiwyg-tool-undo class="wysiwyg-tool"></wysiwyg-tool-undo>
+        <wysiwyg-tool-redo class="wysiwyg-tool"></wysiwyg-tool-redo>
+      </wysiwyg-e>
+      <div>
+        <paper-tags-input enable-add="true" enable-remove="true" tags="{{study._tags}}"></paper-tags-input>
+      </div>
+      <div>
+        <paper-checkbox class="remote" on-click="showLocation">This is a remote study</paper-checkbox>
+        <address-autocomplete value="{{study.location}}" hidden$="{{hide}}"></address-autocomplete>          
+      </div>
+      <div class="centered">
+        <paper-button raised on-click="_submit" type="submit">Submit</paper-button>
+      </div> 
+    </form>  
+    <paper-toast text="{{smsg}}" id="stoast"></paper-toast>
+    <paper-toast text="{{emsg}}" id="etoast"></paper-toast>  
+  </template>
+</dom-module>
+
+<!-- Registers custom element -->
+<script>
+  Polymer({
+    is: 'new-study-component',
+    properties: {
+      study: {
+        type: Object,
+        value: {          
+          title: "",
+          category: "",
+          description: "",
+          investigatorName: "",
+          investigatorEmail: "",
+          price: "0",
+          location: "",
+          _tags:[],
+          tags: "",
+          token: localStorage.getItem("token")
+        }
+      }, 
+      hide: {
+        type: Boolean,
+        value: false
+      }
+    },
+    _submit:function(){    
+      var that = this;  
+      if(Array.isArray(that.study._tags) && that.study._tags.length > 0){
+        that.study.tags = that.study._tags.join(",");
+      }
+
+      $.ajax({
+        url:"/api/experimenter/studies/add",
+        data: JSON.stringify(that.study),
+        contentType: "application/json",
+        method: "POST"
+      }).done(function(msg){
+        if(msg.success) {
+          that.smsg = "Study was created successfully!";
+          that.$.stoast.open();          
+        } else {
+          that.emsg = "Study creation failed!";
+          that.$.etoast.open();
+        }
+      }).fail(function(err){
+        console.log(err);
+      });
+    },
+    showLocation: function() {
+      this.hide = !this.hide;      
+    }, 
+    _itemSelected : function(e) {
+      var selectedItem = e.target.selectedItem;
+      if (selectedItem) {
+        this.study.category = selectedItem.innerText;
+      }
+    }
+  });
+
+</script>

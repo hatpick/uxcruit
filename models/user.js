@@ -13,7 +13,6 @@ userSchema = new Schema({
   phoneNumber: {type: String, required: true},
   lastLogin: {type:Date, default: Date.now},
   role: {type: String, default: 'User'},
-  usedCoupons: [{type: mongoose.Schema.Types.ObjectId, ref: 'Coupon'}],
   createdAt: {type: Date, default: Date.now}
 });
 

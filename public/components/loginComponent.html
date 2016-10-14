@@ -81,6 +81,8 @@
         method: "POST"
       }).done(function(msg){
         if(msg.success) {
+          var token = msg.user.token;
+          localStorage.setItem("token", token);
           window.location.href = "/experimenter";
         } else {
           that.$.etoast.text = "Oops: " + msg.error;

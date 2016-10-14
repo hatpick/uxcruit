@@ -3,18 +3,55 @@ html(lang='en')
   head
     meta(charset='UTF-8')
     meta(name='viewport', content='width=device-width')
-    title UXcruit
+    title UXcruit | Experimenter
     block css
       link(rel='stylesheet', href='/css/styles.min.css')
     block js
       script(src='/vendor/jquery/dist/jquery.js')
       script(src='/vendor/es6-shim/es6-shim.min.js')      
       script(src='/vendor/webcomponentsjs/webcomponents.js')
-    link(rel='import',href='/vendor/polymer/polymer.html')     
-    link(rel='import', href='/vendor/iron-icons/iron-icons.html')  
-    link(rel='import', href='/vendor/paper-icon-button/paper-icon-button.html')
-    link(rel='import', href='/vendor/iron-pages/iron-pages.html')
-    link(rel="import", href="/vendor/iron-flex-layout/classes/iron-flex-layout.html")   
-    style(is='custom-style', include='styles')
-  body    
-    h1 test
+    link(rel='import',href='/vendor/polymer/polymer.html')    
+    link(rel="import", href='/components/experimenter/elements.html')
+    link(rel="import", href='/components/experimenter/routing.html')
+    style(is='custom-style', include='styles')    
+  body        
+    span#browser-sync-binding
+    template#app(is='dom-bind')
+      paper-drawer-panel#paperDrawerPanel
+        paper-scroll-header-panel(drawer='', fixed='')
+          paper-toolbar#drawerToolbar
+            span.menu-name Menu
+          paper-menu(attr-for-selected='data-route', selected='[[route]]')
+            a(data-route='studies', href='', tabindex="-1")
+              span Studies
+            a(data-route='profile', href='', tabindex="-1")
+              span Profile
+            a(data-route='settings', href='', tabindex="-1")
+              span Settings
+        paper-scroll-header-panel#headerPanelMain(main='', condenses='', keep-condensed-header='')
+          paper-toolbar#mainToolbar.tall
+            paper-icon-button#paperToggle(icon='menu', paper-drawer-toggle='')
+            span.space
+            paper-icon-button(icon='refresh')
+            paper-icon-button(icon='search')
+            a(href='/logout', style='text-decoration:none; color:#fff;')
+              iron-icon(icon='lock')
+            .middle.middle-container
+              .app-name UXcruit
+            .bottom.bottom-container
+              .bottom-title Recruiting participants for user studies never has been this easy!
+          .content
+            iron-pages.flex(attr-for-selected='data-route', selected='{{route}}')
+              section(data-route='studies')
+                studies-component#content
+              section(data-route='new')
+                new-study-component#content
+              //- section(data-route='settings')
+              //-   settings-component#content              
+              //- section(data-route='profile')
+              //-   profile-component#content
+            a(href="/experimenter/new", style="text-decoration:none;", tabindex=-1)
+              paper-fab(icon='add', title='Add Study', style='position: fixed; bottom: 32px; right: 32px; float: right;')
+      paper-toast#toast
+    script(src='/js/experimenter/app.js')        
+

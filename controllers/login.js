@@ -33,11 +33,11 @@ module.exports = function(passport) {
             
             if (user) {
                 var errTarget = '';
-                if(user.username == username) {
+                if(user.username === username) {
                     errTarget = 'username';
                     return done(null, false, req.flash('errMessage', 'That ' + errTarget + ' is already taken'));
                 }
-                if(user.email == req.body.email) {
+                if(user.email === req.body.email) {
                     errTarget = 'email';
                     return done(null, false, req.flash('errMessage', 'That ' + errTarget + ' is already taken'));
                 }
@@ -95,7 +95,7 @@ module.exports = function(passport) {
                 user.lastLogin = Date.now();                
                 user.save();
 
-                return done(null, user);
+                return done(null, getToken(user));
             });
 
         }));
@@ -117,11 +117,11 @@ module.exports = function(passport) {
             }
             
             var errTarget = '';
-                if(user.username == username) {
+                if(user.username === username) {
                     errTarget = 'username';
                     return done(null, false, req.flash('errMessage', 'That ' + errTarget + ' is already taken'));
                 }
-                if(user.email == req.body.email) {
+                if(user.email === req.body.email) {
                     errTarget = 'email';
                     return done(null, false, req.flash('errMessage', 'That ' + errTarget + ' is already taken'));
             } else {            
@@ -185,7 +185,7 @@ module.exports = function(passport) {
         var expires = expiresIn(7);
         var token = jwt.encode({
             exp: expires
-        }, 'Atoole65!');        
+        }, 'Atoole65!');
 
         return {
             'id': user._id,

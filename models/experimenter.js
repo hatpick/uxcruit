@@ -1,5 +1,5 @@
 var mongoose = require('mongoose'),
-    bcrypt   = require('bcrypt-nodejs');
+  bcrypt   = require('bcrypt-nodejs');
 
 var Schema = mongoose.Schema,
     experimenterSchema;
@@ -15,26 +15,26 @@ experimenterSchema = new Schema({
   createdAt: {type: Date, default: Date.now},
   lastLogin: {type:Date, default: Date.now},
   role: {type: String, default: 'experimenter'},
-  experimenterCollection: [{type: mongoose.Schema.Types.ObjectId, ref: 'Experimenter'}]
+  studyCollection: [{type: mongoose.Schema.Types.ObjectId, ref: 'Study'}]
 });
 
-experimenterSchema.methods.addExperimenter = function(experimenter) {
-  this.experimenterCollection.push(experimenter);
+experimenterSchema.methods.addStudy = function(study) {
+  this.studyCollection.push(study);
   this.save();
-};
+}
 
-experimenterSchema.methods.removeExperimenter = function(id) {  
-  for(var i = 0; i < this.experimenterCollection.length ; i++)
+experimenterSchema.methods.removeStudy = function(id) {  
+  for(var i = 0; i < this.studyCollection.length ; i++)
   {
-    console.log(this.experimenterCollection[i]);
-    if(this.experimenterCollection[i] === id)
+    console.log(this.studyCollection[i]);
+    if(this.studyCollection[i] == id)
     {
-      this.experimenterCollection.splice(i,1);
+      this.studyCollection.splice(i,1);
       break;
     }
   }
   this.save();
-};
+}
 
 experimenterSchema.methods.generateHash = function(password) {
     return bcrypt.hashSync(password, bcrypt.genSaltSync(8), null);

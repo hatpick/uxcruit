@@ -1,0 +1,52 @@
+<script src="/vendor/page/page.js"></script>
+<script>
+  window.addEventListener('WebComponentsReady', function() {
+    page.base('/experimenter');
+    if (window.location.port === '') {  // if production
+      page.base(app.baseUrl.replace(/\/$/, ''));
+    }
+
+    page('/', function() {
+      app.route = 'studies';
+      $('studies-component').addClass('hide');
+      setTimeout(function(){
+        $('studies-component').removeClass('hide');
+      }, 300);
+    });
+
+    page(app.baseUrl, function() {
+      app.route = 'studies';
+    });
+
+    page('/settings', function() {
+      app.route = 'settings';
+      $('settings-component').addClass('hide');
+      setTimeout(function(){
+        $('settings-component').removeClass('hide');
+      }, 300);
+    });
+
+    page('/new', function() {
+      app.route = 'new';
+      $('new-study-component').addClass('hide');
+      setTimeout(function(){
+        $('new-study-component').removeClass('hide');
+      }, 300);
+    });
+
+    page('/profile', function() {
+      app.route = 'profile';
+    });
+
+    page('*', function() {
+      app.$.toast.text = 'Can\'t find: ' + window.location.href  + '. Redirected you to Home Page';
+      app.$.toast.show();
+      page.redirect('/');
+    });
+    
+    page({
+      hashbang: true
+    });
+
+  });
+</script>
