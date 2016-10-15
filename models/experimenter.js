@@ -24,9 +24,9 @@ experimenterSchema.methods.addStudy = function(study) {
 }
 
 experimenterSchema.methods.removeStudy = function(id) {  
+  console.log(id);
   for(var i = 0; i < this.studyCollection.length ; i++)
-  {
-    console.log(this.studyCollection[i]);
+  {    
     if(this.studyCollection[i] == id)
     {
       this.studyCollection.splice(i,1);

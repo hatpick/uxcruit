@@ -56,3 +56,26 @@ exports.add = function(req, res) {
         }
     });     
 };
+
+exports.delete = function(req, res) {
+    console.log(req.body);
+
+    StudySchema.findByIdAndRemove(req.body._id, {}, function(err){        
+        if(err){
+            res.send({success: false, error: err.message});
+        }
+        else
+        {                        
+            ExperimenterSchema.findOne({username:req.user.username}).exec(function (err, exp) {
+                if(err){
+                    res.send({success: false, error: err.message});
+                }
+                else {                                                    
+                    exp.removeStudy(req.body._id);
+                    res.set('Content-Type', 'application/json');
+                    res.send({success: true});
+                }
+            });
+        }
+    });      
+};

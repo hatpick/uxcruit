@@ -1,26 +1,9 @@
-<!--
-@license
-Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
-This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
-The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
-The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
-Code distributed by Google as part of the polymer project is also
-subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
--->
-<link rel="import" href="/vendor/polymer/polymer.html">
-<link rel="import" href="/vendor/iron-icons/iron-icons.html">
-<link rel="import" href="/vendor/iron-icon/iron-icon.html">
-<link rel="import" href="/vendor/iron-flex-layout/iron-flex-layout.html">
-<link rel="import" href="/vendor/paper-icon-button/paper-icon-button.html">
-<link rel="import" href="/vendor/paper-item/paper-item.html">
-<link rel="import" href="/vendor/paper-item/paper-item-body.html">
-<link rel="import" href="/vendor/paper-styles/color.html">
-<link rel="import" href="/vendor/neon-animation/neon-animatable-behavior.html">
-
 <dom-module id="list-view">
   <template>
     <style>
       :host {
+        display: block;
+        height: 100%;
         @apply(--layout-vertical);
       }
 
@@ -29,33 +12,51 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         @apply(--layout-scroll);
       }
 
+      .action:first-child {
+        margin-right: 8px;
+      }
+
       iron-icon {
         color: var(--google-grey-500);
       }
+
+      .avatar {
+        display: inline-block;
+        box-sizing: border-box;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: var(--paper-amber-500);
+        text-align: center;
+        font-size: 14px;
+        font-weight: bold;
+        color: #fff;
+        line-height: 40px;
+      }
+      .avatar:before {
+        content: "$";
+      }
+
+      .blue {
+        background-color: var(--paper-light-blue-300);
+      }
     </style>
-    <paper-icon-button id="button" icon="arrow-back"></paper-icon-button>
-
-    <div class="main">
-
-        <template is="dom-repeat" items="[[data]]">
-
-          <paper-item>
-            <paper-item-body two-line>
-              <div>[[item.title]]</div>
-              <div secondary>[[item.desciprion]]</div>
-            </paper-item-body>
-            <iron-icon icon="create"></iron-icon>
-            <iron-icon icon="delete"></iron-icon>
-          </paper-item>
-
-        </template>
-
+    <paper-icon-button id="button"></paper-icon-button>
+    <div class="main">      
+      <template is="dom-repeat" items="[[data]]">
+        <paper-icon-item>
+          <div class="avatar blue" item-icon>[[item.price]]</div>
+          <paper-item-body two-line>
+            <div>[[item.title]]</div>
+            <div secondary>[[item.location]]</div>
+          </paper-item-body>
+          <paper-icon-button class="action" icon="create" id="edit" on-click="editStudy"></paper-icon-button>
+          <paper-icon-button class="action" icon="delete" id="delete" on-click="deleteStudy"></paper-icon-button>
+        </paper-icon-item>
+      </template>
     </div>
-
   </template>
-
 </dom-module>
-
 <script>
 
   Polymer({
@@ -101,11 +102,46 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       }
 
     },
-
+    editStudy: function(event) {      
+      var $modelItem = event.model.item
+    },
+    deleteStudy: function(event) {      
+      var $modelItem = event.model.item
+      var $that = this;
+      if($modelItem &&confirm('Are you sure you want to delete '
+       + $modelItem.title + ' study?')) {
+        $modelItem.token = localStorage.getItem("token");
+        $.ajax({
+          url:"/api/experimenter/studies/delete",
+          data: JSON.stringify($modelItem),
+          contentType: "application/json",
+          method: "POST"
+        }).done(function(msg){
+          if(msg.success) { 
+            $that.parentElement.domHost.showMsg('success', 'Study was deleted successfully!');
+            $that._removeBusinessDom($modelItem._id);
+          } else {
+            $that.parentElement.domHost.showMsg('error', 'Study deletion failed!');            
+          }          
+        }).fail(function(err){
+          console.log(err);
+        });
+      }
+    },
+    _removeBusinessDom: function(id) {      
+      for(var i = 0; i < this.data.length; i++) {
+        if(this.data[i]._id == id) {
+          this.splice("data", i, 1);
+          break;
+        }
+      }    
+    },
     _onClick: function(event) {
-      var target = event.target;
+      var target = event.target;      
       while (target !== this && !target._templateInstance) {
         target = target.parentNode;
+        if(target.className.indexOf('action') != -1)
+          return;
       }
 
       // configure the page animation

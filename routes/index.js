@@ -78,6 +78,7 @@ indexRouter.route('/logout').get(function(req, res) {
 
 indexRouter.route('/api/experimenter/studies/list').post(studyController.getAll);
 indexRouter.route('/api/experimenter/studies/add').post(studyController.add);
+indexRouter.route('/api/experimenter/studies/delete').post(studyController.delete);
 indexRouter.route('/api/category/add').post(categoryController.add);
 indexRouter.route('/api/category/list').post(categoryController.getAll);
 

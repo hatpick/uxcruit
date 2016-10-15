@@ -1,19 +1,21 @@
-<!-- Imports polymer -->
-<link rel="import" href="/vendor/iron-ajax/iron-ajax.html">
-<link rel="import" href="/vendor/paper-toolbar/paper-toolbar.html">
-<link rel="import" href="/vendor/neon-animation/neon-animation.html">
-<link rel="import" href="/vendor/neon-animation/neon-animated-pages.html">
-<link rel="import" href="/vendor/neon-animation/demo/list/list-view.html">
-<link rel="import" href="/vendor/neon-animation/demo/list/full-view.html">
-<!-- Defines element markup -->
+<link rel="import" href="list/list-view.html">
+<link rel="import" href="list/full-view.html">
 <dom-module id="studies-component">
   <template>
     <style>
-      :host {
-        display: block;
+      :host {        
+        display: block;        
+        @apply(--layout-fit);
+        margin-top: 192px;
       }
       neon-animated-pages {
         height: 100%;
+      }
+      #stoast {        
+        --paper-toast-background-color: var(--paper-green-500);
+      }
+      #etoast {
+        --paper-toast-background-color: var(--paper-red-500);
       }
     </style>
     <iron-ajax
@@ -26,9 +28,11 @@
       last-response="{{studyData}}">
     </iron-ajax>
     <neon-animated-pages id="pages" selected="0">
-      <list-view data="[[studyData]]" on-item-click="_onItemClick"></list-view>
+      <list-view data="[[studyData.data]]" on-item-click="_onItemClick"></list-view>
       <full-view on-close="_onClose"></full-view>
     </neon-animated-pages>
+    <paper-toast text="{{msg}}" id="stoast"></paper-toast>
+    <paper-toast text="{{msg}}" id="etoast"></paper-toast>  
   </template>
 </dom-module>
 
@@ -41,6 +45,14 @@
         value: "{\"token\": \"" + localStorage.getItem('token') + "\"}"
       }
     },
+    showMsg: function(type, msg) {
+      this.msg = msg;
+      if(type === 'success') {
+        this.$.stoast.open();
+      } else {
+        this.$.etoast.open();
+      }
+    },     
     _onItemClick: function() {
       this.$.pages.selected = 1;
     },
